@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import useStore from '@/store'
-import { supabaseApi } from '@/lib/supabase'
+import { supabase, supabaseApi } from '@/lib/supabase'
 import { v4 as uuidv4 } from 'uuid'
 
 export default function CartPage() {
@@ -101,8 +101,17 @@ export default function CartPage() {
         created_at: new Date().toISOString()
       }
 
-      // Update session with new sub-order
-      const updatedSubOrders = [...currentSession.sub_orders, newSubOrder]
+      // Fetch fresh session data from database to get latest sub_orders
+      const { data: freshSession, error: sessionError } = await supabase
+        .from('table_sessions')
+        .select('sub_orders')
+        .eq('id', currentSession.id)
+        .single()
+
+      if (sessionError) throw sessionError
+
+      // Update session with new sub-order (append to existing)
+      const updatedSubOrders = [...(freshSession.sub_orders || []), newSubOrder]
       await supabaseApi.updateSessionSubOrders(currentSession.id, updatedSubOrders)
 
       // Create individual orders
