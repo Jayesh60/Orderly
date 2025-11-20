@@ -145,10 +145,20 @@ export default function OrderStatusPage() {
   // Don't render until hydrated
   if (!_hasHydrated) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center p-4">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
+          <div className="relative w-32 h-32 mx-auto mb-8">
+            <div className="absolute inset-0 rounded-full border-4 border-blue-200"></div>
+            <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-blue-600 animate-spin"></div>
+            <div className="absolute inset-2 rounded-full border-4 border-transparent border-t-purple-600 animate-spin" style={{animationDuration: '1.5s'}}></div>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <svg className="w-12 h-12 text-blue-600 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
+            </div>
+          </div>
+          <h3 className="text-xl font-bold text-gray-800 mb-2 animate-pulse">Loading...</h3>
+          <p className="text-gray-600">Please wait</p>
         </div>
       </div>
     )
@@ -161,10 +171,25 @@ export default function OrderStatusPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center p-4">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
-          <p className="mt-4 text-gray-600">Loading order status...</p>
+          <div className="relative w-32 h-32 mx-auto mb-8">
+            <div className="absolute inset-0 rounded-full border-4 border-blue-200"></div>
+            <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-blue-600 animate-spin"></div>
+            <div className="absolute inset-2 rounded-full border-4 border-transparent border-t-purple-600 animate-spin" style={{animationDuration: '1.5s'}}></div>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <svg className="w-12 h-12 text-blue-600 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+              </svg>
+            </div>
+          </div>
+          <h3 className="text-xl font-bold text-gray-800 mb-2 animate-pulse">Loading Orders</h3>
+          <p className="text-gray-600">Fetching your order history...</p>
+          <div className="flex justify-center space-x-2 mt-4">
+            <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"></div>
+            <div className="w-2 h-2 bg-purple-600 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
+            <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+          </div>
         </div>
       </div>
     )
