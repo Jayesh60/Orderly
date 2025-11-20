@@ -29,6 +29,22 @@ export const supabaseApi = {
       .is('deleted_at', null)
       .single()
 
+    if (error && error.code !== 'PGRST116') throw error
+    return data
+  },
+
+  async createTable(tableNumber: string, qrCode: string, capacity: number = 4) {
+    const { data, error } = await supabase
+      .from('tables')
+      .insert({
+        table_number: tableNumber,
+        qr_code: qrCode,
+        capacity: capacity,
+        status: 'available'
+      })
+      .select()
+      .single()
+
     if (error) throw error
     return data
   },

@@ -50,32 +50,17 @@ export default function PhoneVerifyPage() {
     }
 
     try {
-      // Generate 6-digit code
-      const code = Math.floor(100000 + Math.random() * 900000).toString()
+      // Hardcoded verification code for testing
+      const code = '123456'
       setGeneratedCode(code)
-
-      // Save to database
-      await supabaseApi.createPhoneVerification(phoneNumber, code)
 
       // In a real app, send SMS here
       console.log(`SMS Code for ${phoneNumber}: ${code}`)
-      alert(`For demo: Your verification code is ${code}`)
 
       setStep('verify')
     } catch (error) {
       console.error('Error sending verification code:', error)
-      console.error('Error details:', {
-        message: error instanceof Error ? error.message : 'Unknown error',
-        name: error instanceof Error ? error.name : 'Unknown',
-        stack: error instanceof Error ? error.stack : undefined,
-        raw: JSON.stringify(error, null, 2)
-      })
-
-      const errorMessage = error instanceof Error
-        ? error.message
-        : 'Failed to send verification code. Please try again.'
-
-      setError(errorMessage)
+      setError('Failed to send verification code. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -87,16 +72,14 @@ export default function PhoneVerifyPage() {
     setError(null)
 
     try {
-      // Verify code
-      await supabaseApi.verifyPhone(phoneNumber, verificationCode)
+      // Hardcoded verification - only accept 123456
+      if (verificationCode !== '123456') {
+        throw new Error('Invalid verification code. Please enter 123456.')
+      }
+
       setStep('name')
     } catch (error) {
       console.error('Error verifying code:', error)
-      console.error('Error details:', {
-        message: error instanceof Error ? error.message : 'Unknown error',
-        raw: JSON.stringify(error, null, 2)
-      })
-
       const errorMessage = error instanceof Error
         ? error.message
         : 'Invalid verification code. Please try again.'

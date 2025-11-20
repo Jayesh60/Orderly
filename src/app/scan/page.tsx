@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { v4 as uuidv4 } from 'uuid'
 import QRScanner from '@/components/QRScanner'
 import useStore from '@/store'
 import { supabaseApi } from '@/lib/supabase'
@@ -58,38 +57,21 @@ export default function ScanPage() {
     try {
       // Create a mock QR code for testing
       const mockQRCode = `table_qr_${tableNumber.padStart(3, '0')}`
-      
-      // Try to get table, if not found create a mock one
-      let table
-      try {
-        table = await supabaseApi.getTableByQR(mockQRCode)
-      } catch {
-        // For testing, create a mock table object
-        table = {
-          id: uuidv4(),
-          table_number: tableNumber,
-          qr_code: mockQRCode,
-          capacity: 4,
-          status: 'available' as const,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        }
+
+      // Try to get table, if not found create it in the database
+      let table = await supabaseApi.getTableByQR(mockQRCode)
+
+      if (!table) {
+        // Create table in the database for testing
+        table = await supabaseApi.createTable(tableNumber, mockQRCode, 4)
       }
 
-      // Check if table has active session or create new one
-      let session
-      try {
-        session = await supabaseApi.getActiveSession(table.id)
-      } catch {
-        // Create mock session for testing
-        session = {
-          id: uuidv4(),
-          table_id: table.id,
-          status: 'active' as const,
-          sub_orders: [],
-          total_amount: 0,
-          created_at: new Date().toISOString()
-        }
+      // Check if table has active session, if not create one in the database
+      let session = await supabaseApi.getActiveSession(table.id)
+
+      if (!session) {
+        // Create session in the database
+        session = await supabaseApi.createSession(table.id)
       }
 
       // Update store

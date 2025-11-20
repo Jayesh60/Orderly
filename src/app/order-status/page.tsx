@@ -82,7 +82,7 @@ export default function OrderStatusPage() {
         .from('orders')
         .select('*')
         .eq('session_id', currentSession.id)
-        .eq('deleted_at', null)
+        .is('deleted_at', null)
         .order('ordered_at', { ascending: false })
 
       if (ordersError) throw ordersError
