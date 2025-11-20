@@ -12,6 +12,7 @@ export default function OrderStatusPage() {
     currentUser,
     currentSession,
     tableNumber,
+    setCurrentSession,
     setLoading,
     setError,
     isLoading,
@@ -22,61 +23,9 @@ export default function OrderStatusPage() {
   const [orders, setOrders] = useState<Order[]>([])
   const [subOrders, setSubOrders] = useState<SubOrder[]>([])
 
-  // Wait for hydration before redirecting
-  useEffect(() => {
-    if (_hasHydrated && (!currentUser || !currentSession)) {
-      router.push('/scan')
-    }
-  }, [_hasHydrated, currentUser, currentSession, router])
-
-  useEffect(() => {
-    if (!_hasHydrated || !currentUser || !currentSession) return
-
-    loadOrderData()
-    
-    // Set up real-time subscription for orders
-    const ordersSubscription = supabase
-      .channel('orders-channel')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'orders',
-          filter: `session_id=eq.${currentSession.id}`,
-        },
-        (payload) => {
-          console.log('Order update:', payload)
-          loadOrderData()
-        }
-      )
-      .subscribe()
-
-    // Set up real-time subscription for table sessions (sub-orders)
-    const sessionSubscription = supabase
-      .channel('session-channel')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'table_sessions',
-          filter: `id=eq.${currentSession.id}`,
-        },
-        (payload) => {
-          console.log('Session update:', payload)
-          loadOrderData()
-        }
-      )
-      .subscribe()
-
-    return () => {
-      ordersSubscription.unsubscribe()
-      sessionSubscription.unsubscribe()
-    }
-  }, [_hasHydrated, currentUser, currentSession])
-
   const loadOrderData = async () => {
+    if (!currentSession) return
+
     setLoading(true)
     setError(null)
 
@@ -102,6 +51,9 @@ export default function OrderStatusPage() {
       if (sessionError) throw sessionError
       setSubOrders(sessionData.sub_orders || [])
 
+      // Update Zustand store with fresh session data for real-time sync
+      setCurrentSession(sessionData)
+
     } catch (error) {
       console.error('Error loading order data:', error)
       setError('Failed to load order status. Please try again.')
@@ -109,6 +61,62 @@ export default function OrderStatusPage() {
       setLoading(false)
     }
   }
+
+  // Wait for hydration before redirecting
+  useEffect(() => {
+    if (_hasHydrated && (!currentUser || !currentSession)) {
+      router.push('/scan')
+    }
+  }, [_hasHydrated, currentUser, currentSession, router])
+
+  useEffect(() => {
+    if (!_hasHydrated || !currentUser || !currentSession) return
+
+    const sessionId = currentSession.id
+
+    loadOrderData()
+
+    // Set up real-time subscription for orders
+    const ordersSubscription = supabase
+      .channel('orders-channel')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'orders',
+          filter: `session_id=eq.${sessionId}`,
+        },
+        (payload) => {
+          console.log('🔄 Real-time order update received:', payload)
+          loadOrderData()
+        }
+      )
+      .subscribe()
+
+    // Set up real-time subscription for table sessions (sub-orders)
+    const sessionSubscription = supabase
+      .channel('session-channel')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'table_sessions',
+          filter: `id=eq.${sessionId}`,
+        },
+        (payload) => {
+          console.log('🔄 Real-time session update received:', payload)
+          loadOrderData()
+        }
+      )
+      .subscribe()
+
+    return () => {
+      ordersSubscription.unsubscribe()
+      sessionSubscription.unsubscribe()
+    }
+  }, [_hasHydrated, currentUser])
 
   const getOrdersBySubOrder = (subOrderId: string) => {
     return orders.filter(order => order.sub_order_id === subOrderId)
