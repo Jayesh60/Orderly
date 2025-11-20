@@ -34,26 +34,11 @@ export default function MenuPage() {
     }
   }, [_hasHydrated, currentUser, currentSession, router])
 
-  // Don't render until hydrated
-  if (!_hasHydrated) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
-        </div>
-      </div>
-    )
-  }
-
-  // Redirect if not authenticated (after hydration)
-  if (!currentUser || !currentSession) {
-    return null
-  }
-
+  // Load menu data after hydration
   useEffect(() => {
+    if (!_hasHydrated || !currentUser || !currentSession) return
     loadMenuData()
-  }, [])
+  }, [_hasHydrated, currentUser, currentSession])
 
   const loadMenuData = async () => {
     setLoading(true)
@@ -100,6 +85,23 @@ export default function MenuPage() {
     return cartItems.reduce((total, item) => total + item.total_price, 0)
   }
 
+  // Don't render until hydrated
+  if (!_hasHydrated) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Redirect if not authenticated (after hydration)
+  if (!currentUser || !currentSession) {
+    return null
+  }
+
   if (isLoading) {
     return (
       <div className="min-h-screen gradient-bg flex items-center justify-center p-4">
@@ -137,7 +139,18 @@ export default function MenuPage() {
                 <p className="text-sm text-gray-600">Welcome back, {currentUser.user_name}</p>
               </div>
             </div>
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-3">
+              <button
+                onClick={() => router.push('/order-status')}
+                className="text-gray-700 hover:text-gray-900 font-semibold px-4 py-2 rounded-lg hover:bg-gray-100 transition-all duration-200"
+              >
+                <div className="flex items-center space-x-2">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                  </svg>
+                  <span className="hidden sm:inline">Orders</span>
+                </div>
+              </button>
               {getTotalCartItems() > 0 && (
                 <button
                   onClick={() => router.push('/cart')}
@@ -244,30 +257,30 @@ export default function MenuPage() {
                       {item.name}
                     </h3>
                     {item.description && (
-                      <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                      <p className="text-gray-700 text-sm mb-4 line-clamp-2">
                         {item.description}
                       </p>
                     )}
-                    
+
                     {/* Quantity Controls */}
                     <div className="flex items-center justify-between mb-4">
-                      <span className="text-sm font-medium text-gray-700">Quantity:</span>
+                      <span className="text-sm font-medium text-gray-800">Quantity:</span>
                       <div className="flex items-center space-x-3 bg-gray-100 rounded-xl p-1">
                         <button
                           onClick={() => handleQuantityChange(item.id, (itemQuantities[item.id] || 1) - 1)}
                           disabled={itemQuantities[item.id] <= 1}
-                          className="w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                          className="w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center text-gray-800 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 12H4" />
                           </svg>
                         </button>
-                        <span className="w-8 text-center font-bold text-lg">
+                        <span className="w-8 text-center font-bold text-lg text-gray-900">
                           {itemQuantities[item.id] || 1}
                         </span>
                         <button
                           onClick={() => handleQuantityChange(item.id, (itemQuantities[item.id] || 1) + 1)}
-                          className="w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-all"
+                          className="w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center text-gray-800 hover:bg-gray-50 transition-all"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />

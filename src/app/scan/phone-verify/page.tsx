@@ -173,9 +173,9 @@ export default function PhoneVerifyPage() {
             ))}
           </div>
           <div className="flex justify-between mt-2 px-2">
-            <span className="text-xs text-white/80 font-medium">Phone</span>
-            <span className="text-xs text-white/80 font-medium">Verify</span>
-            <span className="text-xs text-white/80 font-medium">Name</span>
+            <span className="text-xs text-white font-medium">Phone</span>
+            <span className="text-xs text-white font-medium">Verify</span>
+            <span className="text-xs text-white font-medium">Name</span>
           </div>
         </div>
 

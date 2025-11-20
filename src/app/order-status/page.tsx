@@ -29,24 +29,9 @@ export default function OrderStatusPage() {
     }
   }, [_hasHydrated, currentUser, currentSession, router])
 
-  // Don't render until hydrated
-  if (!_hasHydrated) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
-        </div>
-      </div>
-    )
-  }
-
-  // Redirect if not authenticated (after hydration)
-  if (!currentUser || !currentSession) {
-    return null
-  }
-
   useEffect(() => {
+    if (!_hasHydrated || !currentUser || !currentSession) return
+
     loadOrderData()
     
     // Set up real-time subscription for orders
@@ -89,7 +74,7 @@ export default function OrderStatusPage() {
       ordersSubscription.unsubscribe()
       sessionSubscription.unsubscribe()
     }
-  }, [currentSession.id])
+  }, [_hasHydrated, currentUser, currentSession])
 
   const loadOrderData = async () => {
     setLoading(true)
@@ -147,6 +132,23 @@ export default function OrderStatusPage() {
       case 'delivered': return '🍽️'
       default: return '❓'
     }
+  }
+
+  // Don't render until hydrated
+  if (!_hasHydrated) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Redirect if not authenticated (after hydration)
+  if (!currentUser || !currentSession) {
+    return null
   }
 
   if (isLoading) {
@@ -234,17 +236,17 @@ export default function OrderStatusPage() {
                       {subOrderOrders.map((order) => (
                         <div key={order.id} className="flex justify-between items-center py-2 border-b border-gray-100 last:border-b-0">
                           <div className="flex-1">
-                            <span className="font-medium">{order.menu_item_name}</span>
-                            <span className="text-gray-600 ml-2">×{order.quantity}</span>
+                            <span className="font-medium text-gray-900">{order.menu_item_name}</span>
+                            <span className="text-gray-700 ml-2">×{order.quantity}</span>
                             {order.special_instructions && (
-                              <p className="text-sm text-gray-500 mt-1">
+                              <p className="text-sm text-gray-700 mt-1">
                                 Note: {order.special_instructions}
                               </p>
                             )}
                           </div>
                           <div className="text-right">
-                            <span className="font-medium">${order.total_price.toFixed(2)}</span>
-                            <p className="text-xs text-gray-500">
+                            <span className="font-medium text-gray-900">${order.total_price.toFixed(2)}</span>
+                            <p className="text-xs text-gray-700">
                               ${order.menu_item_price.toFixed(2)} each
                             </p>
                           </div>
@@ -264,7 +266,7 @@ export default function OrderStatusPage() {
               <div className="text-2xl font-bold text-blue-900">
                 ${subOrders.reduce((total, subOrder) => total + subOrder.total_amount, 0).toFixed(2)}
               </div>
-              <p className="text-sm text-blue-700 mt-1">
+              <p className="text-sm text-blue-900 mt-1">
                 {subOrders.length} order{subOrders.length !== 1 ? 's' : ''} • {orders.length} item{orders.length !== 1 ? 's' : ''}
               </p>
             </div>

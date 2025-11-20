@@ -250,14 +250,14 @@ export default function CartPage() {
                   <div className="flex items-center space-x-2">
                     <button
                       onClick={() => handleQuantityChange(item.menu_item.id, item.quantity - 1)}
-                      className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-300"
+                      className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-800 hover:bg-gray-300 font-bold"
                     >
                       -
                     </button>
-                    <span className="w-8 text-center font-medium">{item.quantity}</span>
+                    <span className="w-8 text-center font-medium text-gray-900">{item.quantity}</span>
                     <button
                       onClick={() => handleQuantityChange(item.menu_item.id, item.quantity + 1)}
-                      className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-300"
+                      className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-800 hover:bg-gray-300 font-bold"
                     >
                       +
                     </button>
@@ -285,11 +285,11 @@ export default function CartPage() {
         <div className="bg-white rounded-lg shadow-md p-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Order Summary</h2>
           <div className="space-y-2 mb-4">
-            <div className="flex justify-between">
+            <div className="flex justify-between text-gray-700">
               <span>Items ({getTotalItems()})</span>
               <span>${getTotalPrice().toFixed(2)}</span>
             </div>
-            <div className="flex justify-between font-bold text-lg border-t pt-2">
+            <div className="flex justify-between font-bold text-lg text-gray-900 border-t pt-2">
               <span>Total</span>
               <span>${getTotalPrice().toFixed(2)}</span>
             </div>
