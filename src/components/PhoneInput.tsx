@@ -25,76 +25,127 @@ export default function PhoneInputWrapper({
         onChange={(value) => onChange(value || '')}
         placeholder={placeholder}
         disabled={disabled}
-        defaultCountry="US"
+        defaultCountry="IN"
         international
         countryCallingCodeEditable={false}
         className={error ? 'error' : ''}
       />
       
       <style jsx global>{`
+        .phone-input-wrapper {
+          position: relative;
+        }
+
         .phone-input-wrapper .PhoneInput {
           display: flex;
-          align-items: center;
+          align-items: stretch;
+          gap: 0;
+          width: 100%;
         }
-        
+
         .phone-input-wrapper .PhoneInputCountrySelect {
-          background: #f9fafb;
-          border: 1px solid ${error ? '#fca5a5' : '#d1d5db'};
+          background: linear-gradient(to bottom, #ffffff, #f9fafb);
+          border: 2px solid ${error ? '#f87171' : '#e5e7eb'};
           border-right: none;
-          border-radius: 8px 0 0 8px;
-          padding: 12px;
+          border-radius: 12px 0 0 12px;
+          padding: 14px 12px;
           margin-right: 0;
-          color: #374151;
+          color: #1f2937;
           font-size: 16px;
-          transition: border-color 0.2s, box-shadow 0.2s;
+          font-weight: 600;
+          transition: all 0.2s ease;
+          cursor: pointer;
+          min-width: 80px;
         }
-        
+
+        .phone-input-wrapper .PhoneInputCountrySelect:hover {
+          background: linear-gradient(to bottom, #f9fafb, #f3f4f6);
+          border-color: ${error ? '#f87171' : '#d1d5db'};
+        }
+
         .phone-input-wrapper .PhoneInputCountrySelect:focus {
           outline: none;
           border-color: #3b82f6;
-          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        }
-        
-        .phone-input-wrapper .PhoneInputInput {
-          padding: 12px 16px;
-          border: 1px solid ${error ? '#fca5a5' : '#d1d5db'};
-          border-left: none;
-          border-radius: 0 8px 8px 0;
+          box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
           background: #ffffff;
-          color: #374151;
-          font-size: 16px;
-          font-family: inherit;
-          transition: border-color 0.2s, box-shadow 0.2s;
+          z-index: 1;
         }
-        
+
+        .phone-input-wrapper .PhoneInputInput {
+          flex: 1;
+          padding: 14px 18px;
+          border: 2px solid ${error ? '#f87171' : '#e5e7eb'};
+          border-left: none;
+          border-radius: 0 12px 12px 0;
+          background: #ffffff;
+          color: #1f2937;
+          font-size: 16px;
+          font-weight: 500;
+          font-family: inherit;
+          transition: all 0.2s ease;
+        }
+
+        .phone-input-wrapper .PhoneInputInput:hover {
+          border-color: ${error ? '#f87171' : '#d1d5db'};
+        }
+
         .phone-input-wrapper .PhoneInputInput:focus {
           outline: none;
           border-color: #3b82f6;
-          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+          box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+          z-index: 1;
         }
-        
+
         .phone-input-wrapper .PhoneInputInput::placeholder {
           color: #9ca3af;
+          font-weight: 400;
         }
-        
+
         .phone-input-wrapper.error .PhoneInputCountrySelect,
         .phone-input-wrapper.error .PhoneInputInput {
-          border-color: #fca5a5;
+          border-color: #f87171;
+          background: #fef2f2;
         }
-        
+
+        .phone-input-wrapper.error .PhoneInputInput:focus,
+        .phone-input-wrapper.error .PhoneInputCountrySelect:focus {
+          border-color: #ef4444;
+          box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.15);
+          background: #ffffff;
+        }
+
         .phone-input-wrapper .PhoneInputCountrySelectArrow {
-          width: 16px;
-          height: 16px;
-          margin-left: 8px;
-          opacity: 0.6;
+          width: 12px;
+          height: 12px;
+          margin-left: 6px;
+          opacity: 0.5;
+          transition: opacity 0.2s;
         }
-        
+
+        .phone-input-wrapper .PhoneInputCountrySelect:hover .PhoneInputCountrySelectArrow {
+          opacity: 0.8;
+        }
+
+        .phone-input-wrapper .PhoneInputCountryIcon {
+          width: 24px;
+          height: 24px;
+          margin-right: 8px;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+          border-radius: 2px;
+        }
+
         /* Disabled state */
         .phone-input-wrapper .PhoneInputInput:disabled,
         .phone-input-wrapper .PhoneInputCountrySelect:disabled {
-          background-color: #f3f4f6;
-          color: #6b7280;
+          background: #f3f4f6;
+          color: #9ca3af;
           cursor: not-allowed;
+          opacity: 0.6;
+        }
+
+        .phone-input-wrapper .PhoneInputInput:disabled:hover,
+        .phone-input-wrapper .PhoneInputCountrySelect:disabled:hover {
+          border-color: #e5e7eb;
         }
       `}</style>
     </div>
