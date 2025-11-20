@@ -6,22 +6,26 @@ interface AppState {
   // User state
   currentUser: SessionUser | null
   isAuthenticated: boolean
-  
+
   // Session state
   currentSession: TableSession | null
   tableNumber: string | null
-  
+
   // Menu state
   menuCategories: MenuCategory[]
   menuItems: MenuItem[]
-  
+
   // Cart state
   cartItems: CartItem[]
   currentSubOrderName: string
-  
+
   // UI state
   isLoading: boolean
   error: string | null
+
+  // Hydration state
+  _hasHydrated: boolean
+  setHasHydrated: (state: boolean) => void
 
   // Actions
   setCurrentUser: (user: SessionUser | null) => void
@@ -52,8 +56,11 @@ const useStore = create<AppState>()(
       currentSubOrderName: '',
       isLoading: false,
       error: null,
+      _hasHydrated: false,
 
       // Actions
+      setHasHydrated: (state) => set({ _hasHydrated: state }),
+
       setCurrentUser: (user) => set({ currentUser: user, isAuthenticated: !!user }),
 
       setCurrentSession: (session) => set({ currentSession: session }),
@@ -137,7 +144,10 @@ const useStore = create<AppState>()(
         currentSubOrderName: state.currentSubOrderName,
         menuCategories: state.menuCategories,
         menuItems: state.menuItems
-      })
+      }),
+      onRehydrateStorage: () => (state) => {
+        state?.setHasHydrated(true)
+      }
     }
   )
 )

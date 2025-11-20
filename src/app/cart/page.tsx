@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import useStore from '@/store'
 import { supabaseApi } from '@/lib/supabase'
@@ -21,16 +21,35 @@ export default function CartPage() {
     setLoading,
     setError,
     isLoading,
-    error
+    error,
+    _hasHydrated
   } = useStore()
 
   const [subOrderNameInput, setSubOrderNameInput] = useState(
     currentSubOrderName || `${currentUser?.user_name}'s Order`
   )
 
-  // Redirect if not authenticated
+  // Wait for hydration before redirecting
+  useEffect(() => {
+    if (_hasHydrated && (!currentUser || !currentSession)) {
+      router.push('/scan')
+    }
+  }, [_hasHydrated, currentUser, currentSession, router])
+
+  // Don't render until hydrated
+  if (!_hasHydrated) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Redirect if not authenticated (after hydration)
   if (!currentUser || !currentSession) {
-    router.push('/scan')
     return null
   }
 

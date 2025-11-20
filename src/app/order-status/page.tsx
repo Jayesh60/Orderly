@@ -15,15 +15,34 @@ export default function OrderStatusPage() {
     setLoading,
     setError,
     isLoading,
-    error
+    error,
+    _hasHydrated
   } = useStore()
 
   const [orders, setOrders] = useState<Order[]>([])
   const [subOrders, setSubOrders] = useState<SubOrder[]>([])
 
-  // Redirect if not authenticated
+  // Wait for hydration before redirecting
+  useEffect(() => {
+    if (_hasHydrated && (!currentUser || !currentSession)) {
+      router.push('/scan')
+    }
+  }, [_hasHydrated, currentUser, currentSession, router])
+
+  // Don't render until hydrated
+  if (!_hasHydrated) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Redirect if not authenticated (after hydration)
   if (!currentUser || !currentSession) {
-    router.push('/scan')
     return null
   }
 

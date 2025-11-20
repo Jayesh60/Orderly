@@ -16,7 +16,8 @@ export default function PhoneVerifyPage() {
     setLoading,
     setError,
     isLoading,
-    error
+    error,
+    _hasHydrated
   } = useStore()
 
   const [step, setStep] = useState<'phone' | 'verify' | 'name'>('phone')
@@ -25,14 +26,26 @@ export default function PhoneVerifyPage() {
   const [userName, setUserName] = useState('')
   const [generatedCode, setGeneratedCode] = useState('')
 
-  // Redirect if no session
+  // Wait for hydration before redirecting
   useEffect(() => {
-    if (!currentSession || !tableNumber) {
+    if (_hasHydrated && (!currentSession || !tableNumber)) {
       router.push('/scan')
     }
-  }, [currentSession, tableNumber, router])
+  }, [_hasHydrated, currentSession, tableNumber, router])
 
-  // Don't render if no session
+  // Don't render until hydrated
+  if (!_hasHydrated) {
+    return (
+      <div className="min-h-screen gradient-bg flex items-center justify-center">
+        <div className="text-center">
+          <div className="loading-spinner text-white text-4xl"></div>
+          <p className="mt-4 text-white">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Don't render if no session (after hydration)
   if (!currentSession || !tableNumber) {
     return null
   }
